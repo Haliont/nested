@@ -1,6 +1,5 @@
-export class CreateCardsDto {
-  readonly login: string;
-  readonly password: string;
-  readonly firstName: string;
-  readonly lastName: string;
+export class CreateCardDto {
+  id: string;
+  title: string;
+  description: string;
 }

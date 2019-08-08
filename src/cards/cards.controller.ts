@@ -1,16 +1,21 @@
-import { Controller, Get, Post, Param, Body, Put, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Param, Body, Put, Delete, UseGuards, Req } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { CardsService } from './cards.service';
-import { CreateCardsDto } from './create-card.dto';
-import { UpdateCardsDto } from './update-card.dto';
-import { async } from 'rxjs/internal/scheduler/async';
+import { CreateCardDto } from './create-card.dto';
+import { UpdateCardDto } from './update-card.dto';
+import { User } from '../users/user.entity';
 
-@Controller('users')
+@UseGuards(AuthGuard('jwt'))
+@Controller('cards')
 export class CardsController {
   constructor(private readonly cardsService: CardsService) {}
 
   @Post()
-  async create(@Body() createCardsDto: CreateCardsDto) {
-    return this.cardsService.create(createCardsDto);
+  async create(
+    @Body() createCardDto: CreateCardDto,
+    @Req() { user }: { user: User },
+  ) {
+    return this.cardsService.create(createCardDto);
   }
 
   @Get()
@@ -24,8 +29,8 @@ export class CardsController {
   }
 
   @Put(':id')
-  async update(@Param('id') id: string, @Body() updateCardsDto: UpdateCardsDto) {
-    return this.cardsService.update(id, updateCardsDto);
+  async update(@Param('id') id: string, @Body() updateCardDto: UpdateCardDto) {
+    return this.cardsService.update(id, updateCardDto);
   }
 
   @Delete(':id')

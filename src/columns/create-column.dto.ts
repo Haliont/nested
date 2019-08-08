@@ -1,6 +1,4 @@
 export class CreateColumnDto {
-  readonly login: string;
-  readonly password: string;
-  readonly firstName: string;
-  readonly lastName: string;
+  readonly title: string;
+  readonly description: string;
 }

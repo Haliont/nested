@@ -1,12 +1,31 @@
-import { Controller, Get, Post, Param, Body, Put, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Param, Body, Put, Delete, UseGuards, Req, Inject, forwardRef } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { Request } from 'express';
+import { AuthService } from '../auth/auth.service';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './create-user.dto';
 import { UpdateUserDto } from './update-user.dto';
-import { async } from 'rxjs/internal/scheduler/async';
+import { User } from './user.entity';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    @Inject(forwardRef(() => AuthService))
+    private readonly authService: AuthService,
+  ) {}
+
+  @UseGuards(AuthGuard('local'))
+  @Post('login')
+  async login(@Req() { user }: { user: User }) {
+    return this.authService.login(user);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get('me')
+  getProfile(@Req() { user }: { user: User }) {
+    return user;
+  }
 
   @Post()
   async create(@Body() createUserDto: CreateUserDto) {

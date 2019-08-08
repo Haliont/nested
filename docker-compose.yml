@@ -1,0 +1,38 @@
+version: '3.6'
+
+volumes:
+  postgres_data:
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: yarn start:dev
+    volumes:
+      - .:/usr/app/
+      - /usr/app/node_modules
+    ports:
+      - "5000:5000"
+    depends_on:
+      - postgres
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: nested
+      DB_USERNAME: root
+      DB_PASSWORD: root
+  postgres:
+    image: postgres:9.6.2-alpine
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: nested
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+  adminer:
+      image: adminer
+      restart: always
+      ports:
+          - 8080:8080
+
